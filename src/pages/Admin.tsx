@@ -4,7 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus, Edit, Eye, Trash2 } from 'lucide-react';
+import { Plus, Edit, Eye, Trash2, Globe, FileText } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface SalesPage {
@@ -46,6 +46,35 @@ const Admin = () => {
       });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const togglePublish = async (id: string, currentStatus: boolean) => {
+    try {
+      const { error } = await supabase
+        .from('sales_pages')
+        .update({ is_published: !currentStatus })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      setPages(pages.map(page => 
+        page.id === id ? { ...page, is_published: !currentStatus } : page
+      ));
+      
+      toast({
+        title: !currentStatus ? "Página publicada" : "Página despublicada",
+        description: !currentStatus 
+          ? "Sua página agora está visível publicamente." 
+          : "Sua página foi movida para rascunho.",
+      });
+    } catch (error) {
+      console.error('Error toggling publish status:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível alterar o status da página.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -155,29 +184,54 @@ const Admin = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Link to={`/admin/edit/${page.id}`}>
-                        <Button variant="outline" size="sm">
-                          <Edit className="w-4 h-4" />
-                        </Button>
-                      </Link>
-                      {page.is_published && (
-                        <Link to={`/${page.slug}`} target="_blank">
+                  <div className="flex flex-col gap-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium">
+                        Status: {page.is_published ? 'Publicada' : 'Rascunho'}
+                      </span>
+                      <Button
+                        variant={page.is_published ? "secondary" : "default"}
+                        size="sm"
+                        onClick={() => togglePublish(page.id, page.is_published)}
+                      >
+                        {page.is_published ? (
+                          <>
+                            <FileText className="w-4 h-4 mr-1" />
+                            Despublicar
+                          </>
+                        ) : (
+                          <>
+                            <Globe className="w-4 h-4 mr-1" />
+                            Publicar
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Link to={`/admin/edit/${page.id}`}>
                           <Button variant="outline" size="sm">
-                            <Eye className="w-4 h-4" />
+                            <Edit className="w-4 h-4" />
                           </Button>
                         </Link>
-                      )}
+                        {page.is_published && (
+                          <Link to={`/${page.slug}`} target="_blank">
+                            <Button variant="outline" size="sm">
+                              <Eye className="w-4 h-4" />
+                            </Button>
+                          </Link>
+                        )}
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => deletePage(page.id)}
+                        className="text-destructive hover:text-destructive"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
                     </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => deletePage(page.id)}
-                      className="text-destructive hover:text-destructive"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
                   </div>
                 </CardContent>
               </Card>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate, Navigate } from 'react-router-dom';
+import { useParams, useNavigate, Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -29,6 +29,7 @@ interface SalesPage {
 const PageEditor = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, loading } = useAuth();
   const { toast } = useToast();
   
@@ -40,7 +41,7 @@ const PageEditor = () => {
   const [title, setTitle] = useState('');
   const [slug, setSlug] = useState('');
 
-  const isCreate = id === 'create';
+  const isCreate = location.pathname === '/admin/create';
 
   useEffect(() => {
     if (user) {
@@ -54,7 +55,7 @@ const PageEditor = () => {
         fetchPage();
       }
     }
-  }, [user, id, isCreate]);
+  }, [user, location.pathname, isCreate]);
 
   const fetchPage = async () => {
     if (!id || isCreate) return;

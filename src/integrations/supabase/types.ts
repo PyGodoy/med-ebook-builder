@@ -79,27 +79,36 @@ export type Database = {
       sales_pages: {
         Row: {
           created_at: string
+          description: string | null
           id: string
           is_published: boolean
+          primary_color: string | null
           slug: string
+          status: string | null
           title: string
           updated_at: string
           user_id: string
         }
         Insert: {
           created_at?: string
+          description?: string | null
           id?: string
           is_published?: boolean
+          primary_color?: string | null
           slug: string
+          status?: string | null
           title: string
           updated_at?: string
           user_id: string
         }
         Update: {
           created_at?: string
+          description?: string | null
           id?: string
           is_published?: boolean
+          primary_color?: string | null
           slug?: string
+          status?: string | null
           title?: string
           updated_at?: string
           user_id?: string

@@ -13,17 +13,18 @@ interface PageSection {
 interface SalesPageViewProps {
   title: string;
   sections: PageSection[];
+  primaryColor?: string;
   isPreview?: boolean;
 }
 
-export const SalesPageView = ({ title, sections, isPreview = false }: SalesPageViewProps) => {
+export const SalesPageView = ({ title, sections, primaryColor = '#3b82f6', isPreview = false }: SalesPageViewProps) => {
   const sortedSections = sections.sort((a, b) => a.order_index - b.order_index);
 
   const renderSection = (section: PageSection) => {
     switch (section.section_type) {
       case 'hero':
         return (
-          <section className="bg-gradient-to-r from-primary/10 to-primary/5 py-16 md:py-24">
+          <section className="bg-gradient-to-r from-[var(--custom-primary)]/10 to-[var(--custom-primary)]/5 py-16 md:py-24">
             <div className="container mx-auto px-4 text-center">
               <h1 className="text-4xl md:text-6xl font-bold mb-6 text-foreground">
                 {section.content.title || 'Título Principal'}
@@ -40,7 +41,7 @@ export const SalesPageView = ({ title, sections, isPreview = false }: SalesPageV
           <section className="py-16">
             <div className="container mx-auto px-4 max-w-4xl">
               {section.content.title && (
-                <h2 className="text-3xl font-bold mb-8 text-center">
+                <h2 className="text-3xl font-bold mb-8 text-center text-[var(--custom-primary)]">
                   {section.content.title}
                 </h2>
               )}
@@ -58,7 +59,7 @@ export const SalesPageView = ({ title, sections, isPreview = false }: SalesPageV
           <section className="py-16 bg-gradient-to-br from-primary/5 to-secondary/10 relative overflow-hidden">
             <div className="container mx-auto px-4 text-center relative z-10">
               {section.content.title && (
-                <h2 className="text-4xl md:text-5xl font-bold mb-6 text-primary animate-fade-in">
+                <h2 className="text-4xl md:text-5xl font-bold mb-6 text-[var(--custom-primary)] animate-fade-in">
                   {section.content.title}
                 </h2>
               )}
@@ -71,7 +72,7 @@ export const SalesPageView = ({ title, sections, isPreview = false }: SalesPageV
 
               <Card className="max-w-lg mx-auto shadow-2xl border-primary/20 bg-card/95 backdrop-blur-sm animate-scale-in">
                 <CardContent className="p-8">
-                  <div className="text-5xl md:text-6xl font-bold text-primary mb-8 animate-pulse">
+                  <div className="text-5xl md:text-6xl font-bold text-[var(--custom-primary)] mb-8 animate-pulse">
                     {section.content.price || 'R$ 97,00'}
                   </div>
                   
@@ -81,7 +82,7 @@ export const SalesPageView = ({ title, sections, isPreview = false }: SalesPageV
                         key={index}
                         asChild
                         size="lg"
-                        className="w-full text-lg py-6 hover-scale bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary shadow-lg hover:shadow-xl transition-all duration-300"
+                        className="w-full text-lg py-6 hover-scale bg-gradient-to-r from-[var(--custom-primary)] to-[var(--custom-primary)]/80 hover:from-[var(--custom-primary)]/90 hover:to-[var(--custom-primary)] shadow-lg hover:shadow-xl transition-all duration-300 text-white"
                         disabled={isPreview}
                       >
                         <a href={isPreview ? '#' : button.link} target={isPreview ? undefined : '_blank'}>
@@ -103,10 +104,10 @@ export const SalesPageView = ({ title, sections, isPreview = false }: SalesPageV
             </div>
             
             {/* Background decoration */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-              <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/10 rounded-full blur-3xl"></div>
-              <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-secondary/10 rounded-full blur-3xl"></div>
-            </div>
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-[var(--custom-primary)]/10 rounded-full blur-3xl"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-[var(--custom-primary)]/10 rounded-full blur-3xl"></div>
+      </div>
           </section>
         );
 
@@ -115,7 +116,7 @@ export const SalesPageView = ({ title, sections, isPreview = false }: SalesPageV
           <section className="py-16">
             <div className="container mx-auto px-4">
               {section.content.title && (
-                <h2 className="text-3xl font-bold mb-8 text-center">
+                <h2 className="text-3xl font-bold mb-8 text-center text-[var(--custom-primary)]">
                   {section.content.title}
                 </h2>
               )}
@@ -172,7 +173,7 @@ export const SalesPageView = ({ title, sections, isPreview = false }: SalesPageV
           <section className="py-16 bg-muted/30">
             <div className="container mx-auto px-4 max-w-3xl">
               {section.content.title && (
-                <h2 className="text-3xl font-bold mb-8 text-center">
+                <h2 className="text-3xl font-bold mb-8 text-center text-[var(--custom-primary)]">
                   {section.content.title}
                 </h2>
               )}
@@ -206,7 +207,10 @@ export const SalesPageView = ({ title, sections, isPreview = false }: SalesPageV
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background" style={{
+      '--custom-primary': primaryColor,
+      '--custom-primary-rgb': primaryColor.replace('#', '').match(/.{1,2}/g)?.map(hex => parseInt(hex, 16)).join(', ') || '59, 130, 246'
+    } as React.CSSProperties}>
       {/* Preview banner */}
       {isPreview && (
         <div className="bg-primary text-primary-foreground text-center py-2 text-sm">

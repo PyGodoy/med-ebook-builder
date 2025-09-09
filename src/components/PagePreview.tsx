@@ -12,10 +12,11 @@ interface PageSection {
 interface PagePreviewProps {
   title: string;
   sections: PageSection[];
+  primaryColor: string;
   onClose: () => void;
 }
 
-export const PagePreview = ({ title, sections, onClose }: PagePreviewProps) => {
+export const PagePreview = ({ title, sections, primaryColor, onClose }: PagePreviewProps) => {
   return (
     <div className="fixed inset-0 bg-background z-50 overflow-auto">
       <div className="sticky top-0 bg-card border-b z-10">
@@ -31,7 +32,7 @@ export const PagePreview = ({ title, sections, onClose }: PagePreviewProps) => {
       </div>
       
       <div className="min-h-screen">
-        <SalesPageView title={title} sections={sections} isPreview />
+        <SalesPageView title={title} sections={sections} primaryColor={primaryColor} isPreview />
       </div>
     </div>
   );

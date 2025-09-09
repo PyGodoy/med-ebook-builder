@@ -24,6 +24,7 @@ interface SalesPage {
   title: string;
   slug: string;
   is_published: boolean;
+  primary_color: string;
 }
 
 const PageEditor = () => {
@@ -40,6 +41,7 @@ const PageEditor = () => {
   const [showPreview, setShowPreview] = useState(false);
   const [title, setTitle] = useState('');
   const [slug, setSlug] = useState('');
+  const [primaryColor, setPrimaryColor] = useState('#3b82f6');
 
   const isCreate = location.pathname === '/admin/create';
 
@@ -80,6 +82,7 @@ const PageEditor = () => {
       setPage(pageData);
       setTitle(pageData.title);
       setSlug(pageData.slug);
+      setPrimaryColor(pageData.primary_color || '#3b82f6');
       setSections((sectionsData || []) as PageSection[]);
     } catch (error) {
       console.error('Error fetching page:', error);
@@ -135,6 +138,7 @@ const PageEditor = () => {
             slug: slug.trim(),
             is_published: false,
             user_id: user!.id,
+            primary_color: primaryColor,
           })
           .select()
           .single();
@@ -150,6 +154,7 @@ const PageEditor = () => {
           .update({
             title: title.trim(),
             slug: slug.trim(),
+            primary_color: primaryColor,
           })
           .eq('id', pageId);
 
@@ -274,6 +279,7 @@ const PageEditor = () => {
       <PagePreview
         title={title}
         sections={sections}
+        primaryColor={primaryColor}
         onClose={() => setShowPreview(false)}
       />
     );
@@ -344,6 +350,27 @@ const PageEditor = () => {
               />
               <p className="text-sm text-muted-foreground mt-1">
                 A página ficará disponível em: /{slug}
+              </p>
+            </div>
+            <div>
+              <Label htmlFor="primaryColor">Cor Principal da Página</Label>
+              <div className="flex items-center gap-3">
+                <input
+                  type="color"
+                  id="primaryColor"
+                  value={primaryColor}
+                  onChange={(e) => setPrimaryColor(e.target.value)}
+                  className="w-12 h-10 rounded border border-input cursor-pointer"
+                />
+                <Input
+                  value={primaryColor}
+                  onChange={(e) => setPrimaryColor(e.target.value)}
+                  placeholder="#3b82f6"
+                  className="flex-1"
+                />
+              </div>
+              <p className="text-sm text-muted-foreground mt-1">
+                Esta cor será aplicada nos botões, títulos e elementos principais
               </p>
             </div>
           </CardContent>

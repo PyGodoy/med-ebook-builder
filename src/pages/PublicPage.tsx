@@ -15,6 +15,7 @@ interface SalesPage {
   title: string;
   slug: string;
   is_published: boolean;
+  primary_color: string;
 }
 
 const PublicPage = () => {
@@ -23,6 +24,7 @@ const PublicPage = () => {
   const [sections, setSections] = useState<PageSection[]>([]);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [primaryColor, setPrimaryColor] = useState('#3b82f6');
 
   useEffect(() => {
     if (slug) {
@@ -59,6 +61,7 @@ const PublicPage = () => {
       if (sectionsError) throw sectionsError;
 
       setPage(pageData);
+      setPrimaryColor(pageData.primary_color || '#3b82f6');
       setSections((sectionsData || []) as PageSection[]);
     } catch (error) {
       console.error('Error fetching public page:', error);
@@ -89,7 +92,7 @@ const PublicPage = () => {
       <meta property="og:description" content={`${page.title} - Página de vendas`} />
       <meta property="og:type" content="website" />
       
-      <SalesPageView title={page.title} sections={sections} />
+      <SalesPageView title={page.title} sections={sections} primaryColor={primaryColor} />
     </>
   );
 };

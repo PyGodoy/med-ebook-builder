@@ -64,7 +64,7 @@ export const SalesPageView = ({ title, sections, isPreview = false }: SalesPageV
               )}
               
               {section.content.content && (
-                <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8 leading-relaxed animate-fade-in">
+                <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8 leading-relaxed animate-fade-in whitespace-pre-line">
                   {section.content.content}
                 </p>
               )}

@@ -55,35 +55,57 @@ export const SalesPageView = ({ title, sections, isPreview = false }: SalesPageV
 
       case 'price':
         return (
-          <section className="py-16 bg-muted/30">
-            <div className="container mx-auto px-4 text-center">
+          <section className="py-16 bg-gradient-to-br from-primary/5 to-secondary/10 relative overflow-hidden">
+            <div className="container mx-auto px-4 text-center relative z-10">
               {section.content.title && (
-                <h2 className="text-3xl font-bold mb-8">
+                <h2 className="text-4xl md:text-5xl font-bold mb-6 text-primary animate-fade-in">
                   {section.content.title}
                 </h2>
               )}
-              <Card className="max-w-md mx-auto">
+              
+              {section.content.content && (
+                <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8 leading-relaxed animate-fade-in">
+                  {section.content.content}
+                </p>
+              )}
+
+              <Card className="max-w-lg mx-auto shadow-2xl border-primary/20 bg-card/95 backdrop-blur-sm animate-scale-in">
                 <CardContent className="p-8">
-                  <div className="text-4xl font-bold text-primary mb-6">
+                  <div className="text-5xl md:text-6xl font-bold text-primary mb-8 animate-pulse">
                     {section.content.price || 'R$ 97,00'}
                   </div>
+                  
                   <div className="space-y-4">
                     {(section.content.buttons || []).map((button: any, index: number) => (
                       <Button
                         key={index}
                         asChild
                         size="lg"
-                        className="w-full"
+                        className="w-full text-lg py-6 animate-pulse hover:animate-none hover-scale bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary shadow-lg hover:shadow-xl transition-all duration-300"
                         disabled={isPreview}
                       >
                         <a href={isPreview ? '#' : button.link} target={isPreview ? undefined : '_blank'}>
-                          {button.text || 'Comprar Agora'}
+                          {button.text || 'COMPRAR AGORA'}
                         </a>
                       </Button>
                     ))}
                   </div>
+
+                  {section.content.note && (
+                    <div className="mt-6 p-4 bg-muted/50 rounded-lg">
+                      <p className="text-sm text-muted-foreground italic">
+                        {section.content.note}
+                      </p>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
+            </div>
+            
+            {/* Background decoration */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+              <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/10 rounded-full blur-3xl"></div>
+              <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-secondary/10 rounded-full blur-3xl"></div>
             </div>
           </section>
         );
@@ -106,14 +128,16 @@ export const SalesPageView = ({ title, sections, isPreview = false }: SalesPageV
                           <CardContent className="p-6">
                             <div className="text-center">
                               {image.url && (
-                                <img
-                                  src={image.url}
-                                  alt={image.title || 'Imagem'}
-                                  className="w-full h-64 object-cover rounded-lg mb-4"
-                                  onError={(e) => {
-                                    e.currentTarget.src = '/placeholder.svg';
-                                  }}
-                                />
+                                <div className="flex justify-center mb-4">
+                                  <img
+                                    src={image.url}
+                                    alt={image.title || 'Imagem'}
+                                    className="max-h-96 w-auto object-contain rounded-lg shadow-lg"
+                                    onError={(e) => {
+                                      e.currentTarget.src = '/placeholder.svg';
+                                    }}
+                                  />
+                                </div>
                               )}
                               {image.title && (
                                 <h3 className="text-xl font-semibold mb-2">

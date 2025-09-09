@@ -81,7 +81,16 @@ export const SectionEditor = ({ section, onUpdate, onRemove }: SectionEditorProp
               <Input
                 value={section.content.title || ''}
                 onChange={(e) => updateContent({ title: e.target.value })}
-                placeholder="Preço e Compra"
+                placeholder="Oferta Especial!"
+              />
+            </div>
+            <div>
+              <Label>Conteúdo da Seção</Label>
+              <Textarea
+                value={section.content.content || ''}
+                onChange={(e) => updateContent({ content: e.target.value })}
+                placeholder="Descreva os benefícios e o valor da oferta..."
+                className="min-h-[100px]"
               />
             </div>
             <div>
@@ -90,6 +99,15 @@ export const SectionEditor = ({ section, onUpdate, onRemove }: SectionEditorProp
                 value={section.content.price || ''}
                 onChange={(e) => updateContent({ price: e.target.value })}
                 placeholder="R$ 97,00"
+              />
+            </div>
+            <div>
+              <Label>Observação</Label>
+              <Textarea
+                value={section.content.note || ''}
+                onChange={(e) => updateContent({ note: e.target.value })}
+                placeholder="Oferta válida por tempo limitado..."
+                className="min-h-[60px]"
               />
             </div>
             <div>
@@ -104,7 +122,7 @@ export const SectionEditor = ({ section, onUpdate, onRemove }: SectionEditorProp
                         newButtons[index] = { ...button, text: e.target.value };
                         updateContent({ buttons: newButtons });
                       }}
-                      placeholder="Texto do botão"
+                      placeholder="COMPRAR AGORA"
                     />
                   </div>
                   <div className="flex-1">

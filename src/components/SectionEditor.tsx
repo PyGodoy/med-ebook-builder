@@ -4,8 +4,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Trash2, Plus, Upload } from 'lucide-react';
+import { Trash2, Plus, Upload, X } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 interface PageSection {
   id: string;
@@ -21,8 +23,52 @@ interface SectionEditorProps {
 }
 
 export const SectionEditor = ({ section, onUpdate, onRemove }: SectionEditorProps) => {
+  const [uploading, setUploading] = useState(false);
+  const { toast } = useToast();
+
   const updateContent = (updates: any) => {
     onUpdate({ ...section.content, ...updates });
+  };
+
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random()}.${fileExt}`;
+      
+      const { error: uploadError } = await supabase.storage
+        .from('page-images')
+        .upload(fileName, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('page-images')
+        .getPublicUrl(fileName);
+
+      updateContent({ backgroundImage: publicUrl });
+      
+      toast({
+        title: "Sucesso",
+        description: "Imagem de background carregada com sucesso!",
+      });
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível carregar a imagem.",
+        variant: "destructive",
+      });
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const removeBackgroundImage = () => {
+    updateContent({ backgroundImage: null });
   };
 
   const renderEditor = () => {
@@ -46,6 +92,51 @@ export const SectionEditor = ({ section, onUpdate, onRemove }: SectionEditorProp
                 placeholder="Descrição complementar"
                 className="min-h-[80px]"
               />
+            </div>
+            <div>
+              <Label>Imagem de Background</Label>
+              {section.content.backgroundImage ? (
+                <div className="space-y-2">
+                  <div className="relative">
+                    <img 
+                      src={section.content.backgroundImage} 
+                      alt="Background preview" 
+                      className="w-full h-32 object-cover rounded-lg border"
+                    />
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      className="absolute top-2 right-2"
+                      onClick={removeBackgroundImage}
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center">
+                  <Upload className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
+                  <p className="text-sm text-muted-foreground mb-2">
+                    Clique para adicionar uma imagem de background
+                  </p>
+                  <input
+                    type="file"
+                    id="hero-background"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                    disabled={uploading}
+                  />
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => document.getElementById('hero-background')?.click()}
+                    disabled={uploading}
+                  >
+                    {uploading ? 'Carregando...' : 'Escolher Imagem'}
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         );

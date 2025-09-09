@@ -24,12 +24,19 @@ export const SalesPageView = ({ title, sections, primaryColor = '#3b82f6', isPre
     switch (section.section_type) {
       case 'hero':
         return (
-          <section className="bg-gradient-to-r from-[var(--custom-primary)]/10 to-[var(--custom-primary)]/5 py-16 md:py-24">
-            <div className="container mx-auto px-4 text-center">
-              <h1 className="text-4xl md:text-6xl font-bold mb-6 text-foreground">
+          <section 
+            className="bg-gradient-to-r from-[var(--custom-primary)]/10 to-[var(--custom-primary)]/5 py-16 md:py-24 bg-cover bg-center bg-no-repeat relative"
+            style={{
+              backgroundImage: section.content.backgroundImage 
+                ? `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url(${section.content.backgroundImage})`
+                : undefined
+            }}
+          >
+            <div className="container mx-auto px-4 text-center relative z-10">
+              <h1 className="text-4xl md:text-6xl font-bold mb-6 text-white drop-shadow-lg">
                 {section.content.title || 'Título Principal'}
               </h1>
-              <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+              <p className="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto leading-relaxed drop-shadow-md">
                 {section.content.subtitle || 'Subtítulo descritivo'}
               </p>
             </div>

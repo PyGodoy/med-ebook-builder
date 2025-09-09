@@ -81,7 +81,7 @@ export const SalesPageView = ({ title, sections, isPreview = false }: SalesPageV
                         key={index}
                         asChild
                         size="lg"
-                        className="w-full text-lg py-6 animate-pulse hover:animate-none hover-scale bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary shadow-lg hover:shadow-xl transition-all duration-300"
+                        className="w-full text-lg py-6 hover-scale bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary shadow-lg hover:shadow-xl transition-all duration-300"
                         disabled={isPreview}
                       >
                         <a href={isPreview ? '#' : button.link} target={isPreview ? undefined : '_blank'}>

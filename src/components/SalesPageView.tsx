@@ -250,7 +250,7 @@ export const SalesPageView = ({ title, sections, primaryColor = '#3b82f6', isPre
       {/* Footer */}
       <footer className="bg-muted py-8">
         <div className="container mx-auto px-4 text-center text-muted-foreground">
-          <p>© 2024 E-book Sales. Todos os direitos reservados.</p>
+          <p>© 2025 A&I Med E-book. Todos os direitos reservados.</p>
         </div>
       </footer>
     </div>

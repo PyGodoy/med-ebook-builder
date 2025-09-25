@@ -34,27 +34,23 @@ const AccessControl = () => {
 
   const fetchUsers = async () => {
     try {
-      const { data, error } = await supabase
+      // First get all profiles
+      const { data: profiles, error: profilesError } = await supabase
         .from('profiles')
-        .select(`
-          id,
-          user_id,
-          full_name,
-          created_at,
-          user_roles!inner (
-            id,
-            role,
-            is_active
-          )
-        `);
+        .select('id, user_id, full_name, created_at');
 
-      if (error) throw error;
+      if (profilesError) throw profilesError;
 
-      // For now, we'll use a simpler approach without auth.admin
-      // Get user emails from the session (limited to current capabilities)
-      
-      const usersWithRoles = data?.map(profile => {
-        const userRole = Array.isArray(profile.user_roles) ? profile.user_roles[0] : profile.user_roles;
+      // Then get all user roles
+      const { data: userRoles, error: rolesError } = await supabase
+        .from('user_roles')
+        .select('id, user_id, role, is_active');
+
+      if (rolesError) throw rolesError;
+
+      // Combine the data
+      const usersWithRoles = profiles?.map(profile => {
+        const userRole = userRoles?.find(role => role.user_id === profile.user_id);
         
         return {
           id: profile.user_id,
@@ -65,7 +61,7 @@ const AccessControl = () => {
           is_active: userRole?.is_active || false,
           role_id: userRole?.id || ''
         };
-      }) || [];
+      }).filter(user => user.role_id) || []; // Only include users with roles
 
       setUsers(usersWithRoles);
     } catch (error) {

@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -8,13 +10,48 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const Auth = () => {
-  const { signIn, signUp, user, loading } = useAuth();
+  const { signIn, signUp, user, loading, isAdmin, userRole } = useAuth();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
 
-  // Redirect if already authenticated
-  if (!loading && user) {
+  // Redirect if already authenticated and is admin
+  if (!loading && user && isAdmin) {
     return <Navigate to="/admin" replace />;
+  }
+
+  // Show access denied message if user is authenticated but not admin
+  if (!loading && user && userRole === 'client') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-muted/50 p-4">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl font-bold text-destructive">Acesso Negado</CardTitle>
+            <CardDescription>
+              Usuário sem permissão para acessar o painel administrativo
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="text-center space-y-4">
+            <p className="text-muted-foreground">
+              Sua conta foi criada com sucesso, mas você não tem permissão para acessar o painel administrativo.
+            </p>
+            <p className="text-sm font-medium">
+              Para obter acesso, entre em contato com o suporte.
+            </p>
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                supabase.auth.signOut();
+                navigate('/auth');
+              }}
+              className="w-full"
+            >
+              Fazer Logout
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
 
   const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -28,7 +65,10 @@ const Auth = () => {
     const { error } = await signIn(email, password);
     
     if (!error) {
-      navigate('/admin');
+      // Wait a bit for role check to complete
+      setTimeout(() => {
+        // The useAuth hook will handle redirection based on role
+      }, 1000);
     }
     
     setIsLoading(false);

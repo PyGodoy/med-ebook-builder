@@ -31,7 +31,7 @@ const PageEditor = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, loading } = useAuth();
+  const { user, loading, isAdmin } = useAuth();
   const { toast } = useToast();
   
   const [page, setPage] = useState<SalesPage | null>(null);
@@ -271,6 +271,10 @@ const PageEditor = () => {
   }
 
   if (!user) {
+    return <Navigate to="/auth" replace />;
+  }
+
+  if (!isAdmin) {
     return <Navigate to="/auth" replace />;
   }
 

@@ -4,7 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus, Edit, Eye, Trash2, Globe, FileText } from 'lucide-react';
+import { Plus, Edit, Eye, Trash2, Globe, FileText, Shield } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface SalesPage {
@@ -16,16 +16,16 @@ interface SalesPage {
 }
 
 const Admin = () => {
-  const { user, loading, signOut } = useAuth();
+  const { user, loading, signOut, isAdmin } = useAuth();
   const [pages, setPages] = useState<SalesPage[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
   useEffect(() => {
-    if (user) {
+    if (user && isAdmin) {
       fetchPages();
     }
-  }, [user]);
+  }, [user, isAdmin]);
 
   const fetchPages = async () => {
     try {
@@ -48,6 +48,8 @@ const Admin = () => {
       setIsLoading(false);
     }
   };
+
+  // ... keep existing code (togglePublish and deletePage functions)
 
   const togglePublish = async (id: string, currentStatus: boolean) => {
     try {
@@ -116,6 +118,11 @@ const Admin = () => {
     return <Navigate to="/auth" replace />;
   }
 
+  // Check if user is admin
+  if (!isAdmin) {
+    return <Navigate to="/auth" replace />;
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b bg-card">
@@ -133,19 +140,27 @@ const Admin = () => {
       </header>
 
       <main className="container mx-auto px-4 py-8">
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex justify-between items-center">
           <div>
             <h2 className="text-3xl font-bold">Suas Páginas de Vendas</h2>
             <p className="text-muted-foreground mt-2">
               Gerencie suas páginas de vendas de e-books
             </p>
           </div>
-          <Link to="/admin/create">
-            <Button>
-              <Plus className="w-4 h-4 mr-2" />
-              Nova Página
-            </Button>
-          </Link>
+          <div className="flex items-center gap-4">
+            <Link to="/admin/access-control">
+              <Button variant="outline">
+                <Shield className="w-4 h-4 mr-2" />
+                Controle de Acesso
+              </Button>
+            </Link>
+            <Link to="/admin/create">
+              <Button>
+                <Plus className="w-4 h-4 mr-2" />
+                Nova Página
+              </Button>
+            </Link>
+          </div>
         </div>
 
         {pages.length === 0 ? (

@@ -10,6 +10,7 @@ import Admin from "./pages/Admin";
 import PageEditor from "./pages/PageEditor";
 import PublicPage from "./pages/PublicPage";
 import NotFound from "./pages/NotFound";
+import AccessControl from "./pages/AccessControl";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +27,7 @@ const App = () => (
             <Route path="/admin" element={<Admin />} />
             <Route path="/admin/create" element={<PageEditor />} />
             <Route path="/admin/edit/:id" element={<PageEditor />} />
+            <Route path="/admin/access-control" element={<AccessControl />} />
             <Route path="/:slug" element={<PublicPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

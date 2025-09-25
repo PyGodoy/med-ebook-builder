@@ -7,6 +7,8 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
+  isAdmin: boolean;
+  userRole: string | null;
   signUp: (email: string, password: string, fullName: string) => Promise<{ error: any }>;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
@@ -18,7 +20,35 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [userRole, setUserRole] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const { toast } = useToast();
+
+  const checkUserRole = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('user_roles')
+        .select('role, is_active')
+        .eq('user_id', userId)
+        .eq('is_active', true)
+        .single();
+
+      if (error) {
+        console.error('Error checking user role:', error);
+        setUserRole('client');
+        setIsAdmin(false);
+        return;
+      }
+
+      const role = data?.role || 'client';
+      setUserRole(role);
+      setIsAdmin(role === 'admin');
+    } catch (error) {
+      console.error('Error checking user role:', error);
+      setUserRole('client');
+      setIsAdmin(false);
+    }
+  };
 
   useEffect(() => {
     // Set up auth state listener
@@ -27,11 +57,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setSession(session);
         setUser(session?.user ?? null);
         
+        if (session?.user) {
+          // Check user role when signed in
+          setTimeout(() => {
+            checkUserRole(session.user.id);
+          }, 0);
+        } else {
+          setUserRole(null);
+          setIsAdmin(false);
+        }
+        
         if (event === 'SIGNED_IN') {
-          toast({
-            title: "Login realizado com sucesso!",
-            description: "Bem-vindo ao painel administrativo.",
-          });
+          // Don't show success message yet, wait for role check
         }
         
         if (event === 'SIGNED_OUT') {
@@ -39,6 +76,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             title: "Logout realizado",
             description: "Você foi desconectado do sistema.",
           });
+          setUserRole(null);
+          setIsAdmin(false);
         }
       }
     );
@@ -47,7 +86,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
-      setLoading(false);
+      
+      if (session?.user) {
+        checkUserRole(session.user.id).finally(() => {
+          setLoading(false);
+        });
+      } else {
+        setLoading(false);
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -109,6 +155,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       user,
       session,
       loading,
+      isAdmin,
+      userRole,
       signUp,
       signIn,
       signOut,
